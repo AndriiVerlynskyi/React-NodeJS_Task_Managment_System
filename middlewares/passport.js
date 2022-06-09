@@ -14,7 +14,7 @@ module.exports = (passport) => {
       try {
         const user = await User.findById(
           payload._id
-        ).select('email role');
+        )
 
         if (user) {
           done(null, user);

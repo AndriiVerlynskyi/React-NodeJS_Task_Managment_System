@@ -8,7 +8,7 @@ const MONGO_URL =
 const MONGO_DB = process.env.MONGO_DB || 'Task_Management_System';
 
 function connectDb() {
-  mongoose.connect(`${MONGO_URL}`, {
+  mongoose.connect(`${MONGO_URL}/${MONGO_DB}`, {
     dbName: MONGO_DB,
     useUnifiedTopology: true,
     useNewUrlParser: true,
