@@ -10,5 +10,23 @@
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",
     "path": "^0.12.7"
-  }
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "name": "react_nodejs_task_ms",
+  "version": "1.0.0",
+  "main": "server.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AndriiVerlynskyi/React-NodeJS_Task_Managment_System.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AndriiVerlynskyi/React-NodeJS_Task_Managment_System/issues"
+  },
+  "homepage": "https://github.com/AndriiVerlynskyi/React-NodeJS_Task_Managment_System#readme",
+  "description": ""
 }
