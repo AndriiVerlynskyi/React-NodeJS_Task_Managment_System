@@ -2,36 +2,61 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const {
-  SECRET_JWT_KEY_SIGN_IN,
-  EXPIRE_JWT_TIME_SIGN_IN,
-  SECRET_JWT_KEY_SIGN_UP,
-  EXPIRE_JWT_TIME_SIGN_UP
+  SECRET_JWT_KEY_SIGN_UP
 } = process.env || {};
 
 const { User } = require('../../database/models/index');
 
-const { emailService } = require('../../services/email');
+const {
+  sendUserSignUpEmail,
+  sendUserSuccessfullySignUpEmail
+} = require('../../services/email');
+
+const {
+  createSignInToken,
+  createSignUpToken
+} = require('../../utils/token');
 
 module.exports.signUpSendLetter = async (req, res) => {
+
   const { username, email, password } = req.body;
 
-  let candidate = await User.findOne({username})
+  let candidate = await User.findOne({username});
 
   if (candidate) {
-    return res.status(409).send({
-      message: 'User with such username is already exists'
-    })
+    try {
+      const token = createSignUpToken(candidate.email);
+      await sendUserSignUpEmail(candidate.email, token);
+      return res.status(200).json({
+        error: false,
+        message: 'Confirmation letter is on user email'
+      })
+    } catch (err) {
+      return res.status(404).send({
+        error: true,
+        message: 'Failed to send email'
+      })
+    }
   }
 
   candidate = await User.findOne({email})
 
   if (candidate) {
-    return res.status(409).send({
-      message: 'User with such email is already exists'
-    })
+    try {
+      await sendUserSignUpEmail(candidate.email, token);
+      return res.status(200).json({
+        error: false,
+        message: 'Confirmation letter is on user email'
+      })
+    } catch (err) {
+      return res.status(404).send({
+        error: true,
+        message: 'Failed to send email'
+      })
+    }
   } 
   
-  const salt = bcryptjs.genSaltSync(10);
+  const salt = bcrypt.genSaltSync(10);
 
   const user = new User({
     username,
@@ -40,31 +65,28 @@ module.exports.signUpSendLetter = async (req, res) => {
     confirmedAt: null
   })
 
-  const token = jwt.sign(
-    { email },
-    SECRET_JWT_KEY_SIGN_UP,
-    { expiresIn: Number(EXPIRE_JWT_TIME_SIGN_UP) }
-  );
-
-  try { 
-    await user.save();
+  try {
+    const newUser = await user.save();
 
     try {
-      await emailService.userSignUp(email, token)
+      const token = createSignUpToken(newUser);
+      await sendUserSignUpEmail(email, token);
     } catch (err) {
-      return res.status(404).send(err.message)
+      console.log(err)
+      return res.status(404).send({...err, messag: 'Failed to send mail'});
     }
 
     res.status(200).send({
+      error: false,
       message:'Email was sent successfully to the email'
     })
   } catch (err) {
-    res.status(500).send(err.message)
+    res.status(500).send({ message: err.message, error: true })
   }
 }
 
 module.exports.signUpConfirmation = async (req, res) => {
-  const { token } = req.body;
+  const { token, email: inputEmail } = req.body;
 
   jwt.verify(
     token,
@@ -79,20 +101,38 @@ module.exports.signUpConfirmation = async (req, res) => {
       }
 
       const { email } = payload;
+      console.log(inputEmail)
+      console.log(payload)
 
-      try {
-        await User.findOneAndUpdate(
-          { email },
-          { $set:{ confirmedAt: new Date().getTime()}}
-        )
+      if (inputEmail === email) {
+        try {
+          await User.findOneAndUpdate(
+            { email },
+            { $set:{ confirmedAt: new Date().toISOString()}}
+          )
 
-        res.status(200).send({
-          message:'User was successfully confirmed'
-        })
-      } catch (err) {
-        res.status(500).json({
-          error: true,
-          message: err.message ? err.message : err
+          try {
+            await sendUserSuccessfullySignUpEmail(email)
+          } catch (err) {
+            return res.status(404).send({
+              error: true,
+              message: 'Failed to send the letter'
+            })
+          }
+  
+          res.status(200).send({
+            error: false,
+            message:'User was successfully confirmed'
+          })
+        } catch (err) {
+          res.status(500).json({
+            error: true,
+            message: err.message ? err.message : err
+          })
+        }
+      } else {
+        res.status(401).send({
+          message: 'This link is wrong'
         })
       }
     }
@@ -113,6 +153,9 @@ module.exports.signIn = async (req, res) => {
     const { confirmedAt } = candidate;
 
     if (confirmedAt === null) {
+      const token = createSignUpToken(candidate);
+      await sendUserSignUpEmail(candidate.email, token);
+
       return res.status(401).send({
         message: 'User haven\'t confirmed the email',
         notConfirmed: true
@@ -123,19 +166,15 @@ module.exports.signIn = async (req, res) => {
       password,
       candidate.password
     )
-
     if (checkedPassword) {
-      const token = jwt.sign(
-        { email },
-        SECRET_JWT_KEY_SIGN_IN,
-        { expiresIn: Number(EXPIRE_JWT_TIME_SIGN_IN) }
-      );
+      const token = createSignInToken(candidate);
 
-      res.status(200).send({
-        message: 'Successfully signed in',
-        token,
-        notConfirmed: false
-      })
+      res.status(200)
+        .set('Authorization', `Bearer ${token}`)
+        .json({
+          token,
+          notConfirmed: false
+        })
     } else {
       res.status(401).send({
         message: 'Email and password do not match',

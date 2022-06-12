@@ -11,11 +11,10 @@ const { validate } = require('../../middlewares/validate');
 
 const controller = require('./controller');
 
-const router = express.router();
+const router = express.Router();
 
 router.post(
-  '/signup/sendLetter',
-  passport.authenticate('jwt', {session: false}),
+  '/signup/sendletter',
   emailValidationRules(),
   usernameValidationRules(),
   passwordValidationRules(),
@@ -24,15 +23,15 @@ router.post(
 )
 
 router.post(
-  'signup/confirmation',
-  passport.authenticate('jwt', {session: false}),
+  '/signup/confirmemail',
+  // passport.authenticate('jwt', {session: false}),
   controller.signUpConfirmation
 )
 
 router.post(
   '/signin',
-  passport.authenticate('jwt', {session: false}),
-  controller.signIn()
+  // passport.authenticate('jwt', {session: false}),
+  controller.signIn
 )
 
 module.exports = router;

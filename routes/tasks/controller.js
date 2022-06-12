@@ -1,23 +1,22 @@
-const mongoose = require('mongoose');
-
-const { Task } = require('../../database/models/Task');
+const { Task } = require('../../database/models');
 
 const { createFilter } = require('./filter');
 
 module.exports.getAllTasks = async (req, res) => {
   try {
-    const filter = createFilter(req);
-    filter[userId] = req.user._id;
+    const filter = createFilter(req)
+    console.log(filter)
     const tasksPerPage = Number(req.query.perPage) || 15;
     const page = Number(req.query.page) || 1;
 
-    const tasks = await Task.find(filter)
-                    .select('title, _id')
+    const tasks = (await Task.find(filter)
+                    .select('title isDone _id')
                     .skip(tasksPerPage * (page - 1))
-                    .limit(tasksPerPage) || [];
+                    .limit(tasksPerPage)) || [];
 
-    return res.staus(200).send(tasks);
+    return res.status(200).send(tasks);
   } catch (err) {
+    console.log(err)
     res.status(500).send(err)
   }  
 }
@@ -26,11 +25,9 @@ module.exports.getTask = async(req, res) => {
   try {
     const { taskId } = req.params;
 
-    const task = await Task.findOneById(taskId)
+    const task = await Task.findById(taskId)
 
-    if ( task._id === req.user._id ) {
-      const task = await Task.findOne({ _id: taskId });
-
+    if ( task.userId.toString() === req.user._id.toString() ) {
       return res.status(200).send(task)
     } else {
       return res.status(401).send({
@@ -38,14 +35,15 @@ module.exports.getTask = async(req, res) => {
       })
     }
   } catch (err) {
+    console.log(err)
     res.status(500).send(err)
   }
 }
 
 module.exports.createTask = async (req, res) => {
   try {
-    const { task } = req.body;
-    const result = await Task.create({...task, uesrId: req.user._id})
+    const task = req.body;
+    const result = await Task.create({...task, userId: req.user._id})
 
     return res.status(200).send(result)
   } catch (err) {
@@ -56,9 +54,9 @@ module.exports.createTask = async (req, res) => {
 module.exports.deleteTask = async (req, res) => {
   try {
     const { taskId } = req.params;
-    const task = await Task.findOneById(taskId)
+    const task = await Task.findById(taskId);
 
-    if ( task._id === req.user._id ) {
+    if ( task.userId.toString() === req.user._id.toString() ) {
       const deletedTask = await Task.findOneAndDelete({ _id: taskId })
 
       return res.status(200).send(deletedTask)
@@ -77,7 +75,7 @@ module.exports.deleteTask = async (req, res) => {
 module.exports.changeIsDone = async(req, res) => {
   try {
     const { taskId } = req.params;
-    const task = await Task.findById(id);
+    const task = await Task.findById(taskId);
 
     //change isDone field and return error false if changes are saved
     await Task.findOneAndUpdate(
@@ -89,6 +87,7 @@ module.exports.changeIsDone = async(req, res) => {
       error: false
     })
   } catch (err) {
+    console.log(err)
     return res.status(500).send({
       ...err,
       error: true
@@ -99,9 +98,12 @@ module.exports.changeIsDone = async(req, res) => {
 module.exports.editTask = async (req, res) => {
   try {
     const { taskId } = req.params;
-    const { editedFields } = req.body;
+    const editedFields = req.body;
+    console.log(editedFields)
 
-    if ( taskId === req.user._id ) {
+    const task = await Task.findById(taskId);
+
+    if ( task.userId.toString() === req.user._id.toString() ) {
       const editedTask = await Task.findOneAndUpdate(
         {_id: taskId},
         { $set: { ...editedFields }}

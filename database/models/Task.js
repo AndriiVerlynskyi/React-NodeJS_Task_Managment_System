@@ -15,18 +15,22 @@ const taskSchema = new Schema({
 
   isDone: {
     type: Boolean,
-    required: true,
     default: false
   },
 
   priority: {
-    type: Number,
+    type: String,
     required: true
   },
   
   dueDate: {
     type: Date,
     required: true
+  },
+
+  userId: {
+    type: mongoose.Types.ObjectId,
+    required: true    
   }
 });
 

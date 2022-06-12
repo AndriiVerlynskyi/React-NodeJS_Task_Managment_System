@@ -3,49 +3,47 @@ const passport = require('passport');
 
 const { validate } = require('../../middlewares/validate');
 
-const { tasksValidationRules } = require('../../validation/tasksValidation');
+const { createTasksValidationRules } = require('../../validation/tasksValidation');
 
 const controller = require('./controller');
 
 const router = express.Router();
 
 router.get(
-  '/task',
+  '/',
   passport.authenticate('jwt', {session: false}),
   controller.getAllTasks
 )
 
 router.get(
-  '/task/:taskId',
+  '/:taskId',
   passport.authenticate('jwt', {session: false}),
   controller.getTask
 )
 
 router.post(
-  '/task/add',
+  '/',
   passport.authenticate('jwt', {session: false}),
-  tasksValidationRules(),
+  createTasksValidationRules(),
   validate,
   controller.createTask
 )
 
 router.delete(
-  'task/delete/:taskId',
+  '/:taskId',
   passport.authenticate('jwt', {session: false}),
   controller.deleteTask
 )
 
 router.put(
-  'task/changeIsDone/:taskId',
+  '/changeIsDone/:taskId',
   passport.authenticate('jwt', {session: false}),
   controller.changeIsDone
 )
 
 router.put(
-  '/task/edit/:taskId',
+  '/:taskId',
   passport.authenticate('jwt', {session: false}),
-  tasksValidationRules(),
-  validate,
   controller.editTask
 )
 

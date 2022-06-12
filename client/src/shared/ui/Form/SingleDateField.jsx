@@ -15,7 +15,7 @@ const SingleDatePicker = ({ startDate, ...props }) => {
         {...field}
         {...props}
         selected={field.value}
-        minDate={new Date()}
+        minDate={new Date().toISOString()}
         dateFormat='dd/MM/yyyy'
         onChange={date => setFieldValue(field.name, date)}
         wrapperClassName='datePicker'

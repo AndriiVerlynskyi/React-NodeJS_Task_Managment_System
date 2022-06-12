@@ -1,57 +1,67 @@
 const nodemailer = require('nodemailer');
+const { google } = require('googleapis');
 
-const { EMAIL_SENDER, EMAIL_PASSWORD } =
-  process.env || {};
+const { EMAIL_SENDER, BASE_URL } = process.env;
+const { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, REFRESH_TOKEN } = process.env;
 
-class EmailService {
-  constructor() {
-    this.mailService = nodemailer.createTransport({
+const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
+oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN })
+
+const createGmailTransporter = async () => {
+  try {
+    const { token } = await oAuth2Client.getAccessToken()
+    return nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: EMAIL_SENDER,
-        pass: EMAIL_PASSWORD
-      }
-    });
+          type: 'OAuth2',
+          user: 'test.taskms@gmail.com',
+          clientId: CLIENT_ID,
+          clientSecret: CLIENT_SECRET,
+          refreshToken: REFRESH_TOKEN,
+          accessToken: token
+        }
+    })
+  } catch (err) {
+    console.log(err)
   }
-
-  sendMail (letterDetails) {
-    return this.mailService.sendMail({
-      from: EMAIL_SENDER,
-      ...letterDetails
-    });
-  }
-
-  userSignUp(email, token) {
-    return this.sendMail({
+}
+ 
+const sendUserSignUpEmail = async (email, token) => {
+  try {
+    const transporter = await createGmailTransporter();
+    const mail = await transporter.sendMail({
+      from: `<${EMAIL_SENDER}>`,
       to: email,
-      subject: 'User registration on taskMS',
+      subject: 'User registration on taskinMS',
       html: `
-              <h1>Hello!</h1>
-              <p>To finish the registration confirm your account</p>
-              <p>Here is the link - <a href="${BASE_URL}/signup/${email}/${token}">Confirm account</a>.</p>
-            `
+        <h1>Hello!</h1>
+        <p>To finish the registration confirm your account</p>
+        <p>Here is the link - <a href="${BASE_URL}/signup/${email}/${token}">confirm account</a>.</p>
+      `
     });
-  }
-
-  userSuccessfullySignUp(email) {
-    return this.sendMail({
-      to: email,
-      subject:
-        'Successfull registration on taskMS',
-      html: `
-              <h1>Hello!</h1>
-              <p>To finish the registration you have to create a password</p>
-              <p>You have successfully registered in our service, your login is ${email}</p>
-              <hr />
-              <hr />
-              <a href="${BASE_URL}">Home page</a>
-            `
-    });
+    return mail
+  } catch (err) {
+    return err
   }
 }
 
-const emailService = new EmailService();
+const sendUserSuccessfullySignUpEmail = async (email) => {
+  const transporter = await createGmailTransporter();
+  return await transporter.sendMail({
+    from: `<${EMAIL_SENDER}>`,
+    to: email,
+    subject: 'Successfull registration on taskinMS',
+    text: `Signed up succesfully. Here is the link: ${BASE_URL}`,
+    html: `
+      <h1>Hello!</h1>
+      <p>You have successfully registered in our service, your login is ${email}</p>
+      <hr />
+      <a href="${BASE_URL}/signin">To the app.</a>
+    `
+  });
+}
 
 module.exports = {
-  emailService
+  sendUserSignUpEmail,
+  sendUserSuccessfullySignUpEmail
 };

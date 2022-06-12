@@ -4,9 +4,10 @@ const emailValidationRules = () => {
   return [
     body('email')
       .notEmpty()
-      .withMessage('Поле обов\'язкове.')
+      .withMessage('Email is required')
+      .normalizeEmail()
       .isEmail()
-      .withMessage('Некоректно введена електронна адреса.')
+      .withMessage('Put correct email')
   ];
 };
 
@@ -14,30 +15,19 @@ const usernameValidationRules = () => {
   return [
     body('username')
       .notEmpty()
-      .withMessage('Поле обов\'язкове.')
+      .withMessage('Username is required')
   ];
 };
 
 // Rules for registration router
 const passwordValidationRules = () => {
   return [
-    // Password - required, length 8 - 64 symbols and password validation
     body('password')
       .notEmpty()
-      .withMessage("Поле обов'язкове.")
-      .isLength({ min: 6, max: 64 })
+      .withMessage('Password is required')
+      .isLength({ min: 6 })
       .withMessage(
-        'Довжина пароля повинна бути від 6 до 64 символів.'
-      ),
-
-    body('passwordConfirm')
-      .notEmpty()
-      .withMessage("Поле обов'язкове.")
-      .custom(
-        (value, { req }) => value === req.body.password
-      )
-      .withMessage(
-        'Некоректно введене підтвердження пароля.'
+        'Password has to be of at least 6 symbols'
       )
   ];
 };
