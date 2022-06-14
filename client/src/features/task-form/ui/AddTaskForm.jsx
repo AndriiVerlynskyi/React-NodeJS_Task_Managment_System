@@ -1,0 +1,75 @@
+import React from 'react';
+import { Formik, Form } from 'formik';
+import { ADD_TASK_INITIAL_VALUES } from '../lib/constants';
+import { useMutation } from 'react-query';
+import { addTaskQueryKey } from 'shared/consts/query-constants';
+import { addTask } from 'shared/api/tasks';
+
+import PriorityField from './components/PriorityField';
+import SingleDatePicker from 'shared/ui/Form/SingleDateField';
+import SimpleTextField from 'shared/ui/Form/SimpleTextField';
+import TextAreaField from 'shared/ui/Form/TextArea';
+import BaseButton from 'shared/ui/BaseButton';
+import TaskFormSchema from '../model/validator';
+import CenteredContainer from 'shared/ui/Containers/CenteredContainer';
+import { useTasksQuery } from 'shared/hooks/useQuery';
+
+const AddTaskForm = ({ setShowModal }) => {
+  const { refetch } = useTasksQuery();
+  const { mutateAsync } = useMutation(addTaskQueryKey, 
+    (data) => addTask(data)
+  )
+
+  const handleSubmit = async (values) => {
+    try {
+      await mutateAsync({...values, priority: +values.priority})
+      setShowModal(false)
+      await refetch()
+    } catch (err) {
+      alert('Failed to add task')
+    }
+  }
+  return (
+    <Formik
+      initialValues={ADD_TASK_INITIAL_VALUES}
+      validationSchema={TaskFormSchema}
+      onSubmit={handleSubmit}
+    >
+      { ({ handleChange, values }) => (
+        <Form>
+          <CenteredContainer>
+            <SimpleTextField
+              type='text'
+              name='title'
+              label='title'
+              onChange={handleChange}
+              value={values.title}
+            />
+            <TextAreaField
+              type='text'
+              name='description'
+              label='description'
+              onChange={handleChange}
+              value={values.description}
+            />
+            <PriorityField
+              id='priority'
+              name='priority'
+              onChange={handleChange}
+              value={values.priority}
+            />
+            <SingleDatePicker
+              id='dueDate'
+              name='dueDate'
+            />
+            <div className='mt-3'>
+              <BaseButton type='submit'>Add task</BaseButton>          
+            </div>
+          </CenteredContainer>
+        </Form>
+      )}
+    </Formik>
+  )
+}
+
+export default AddTaskForm;

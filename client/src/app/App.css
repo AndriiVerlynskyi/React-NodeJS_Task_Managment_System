@@ -1,5 +1,8 @@
 .App {
   text-align: center;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
 }
 
 .App-logo {
@@ -35,4 +38,21 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.datePicker input {
+  width: 250px;
+}
+
+.card-hover:hover{
+  transform: scale(1.03);
+  box-shadow: 0 10px 20px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
+}
+
+.card-active{
+  border: 1px solid gray;
+}
+
+.done-task-title{
+  color: lightgray;
 }

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const userSchema = new Schema({
+const taskSchema = new Schema({
   title: {
     type: String,
     required: true
@@ -15,10 +15,10 @@ const userSchema = new Schema({
 
   isDone: {
     type: Boolean,
-    required: true,
     default: false
   },
 
+  //Proirity field, where 4 is hot
   priority: {
     type: Number,
     required: true
@@ -27,7 +27,12 @@ const userSchema = new Schema({
   dueDate: {
     type: Date,
     required: true
+  },
+
+  userId: {
+    type: mongoose.Types.ObjectId,
+    required: true    
   }
 });
 
-module.exports = mongoose.model('users', userSchema);
+module.exports = mongoose.model('task', taskSchema);

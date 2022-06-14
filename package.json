@@ -1,9 +1,41 @@
 {
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
     "express": "^4.18.1",
+    "express-validator": "^6.14.1",
+    "googleapis": "^101.0.0",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.3.5",
+    "nodemailer": "^6.7.5",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",
     "path": "^0.12.7"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "server": "nodemon ./server.js localhost 5000",
+    "build": "cd client && npm run build",
+    "install-client": "cd client && npm install",
+    "heroku-postbuild": "npm run install-client && npm run build"
+  },
+  "name": "react_nodejs_task_ms",
+  "version": "1.0.0",
+  "main": "server.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AndriiVerlynskyi/React-NodeJS_Task_Managment_System.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AndriiVerlynskyi/React-NodeJS_Task_Managment_System/issues"
+  },
+  "homepage": "https://github.com/AndriiVerlynskyi/React-NodeJS_Task_Managment_System#readme",
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^2.0.16"
   }
 }
