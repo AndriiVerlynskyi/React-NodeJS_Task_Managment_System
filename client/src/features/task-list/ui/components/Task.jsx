@@ -64,6 +64,7 @@ const Task = ({ task, sorter }) => {
           showModal={showEditTaskModal}
           setShowModal={setShowEditTaskModal}
           taskId={task._id}
+          sorter={sorter}
         />
       }
       <div
