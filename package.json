@@ -16,7 +16,10 @@
   },
   "scripts": {
     "start": "node server.js",
-    "server": "nodemon ./server.js localhost 5000"
+    "server": "nodemon ./server.js localhost 5000",
+    "build": "cd client && npm run build",
+    "install-client": "cd client && npm install",
+    "heroku-postbuild": "npm run install-client && npm run build"
   },
   "name": "react_nodejs_task_ms",
   "version": "1.0.0",

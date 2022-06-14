@@ -20,6 +20,10 @@ require('./middlewares/passport')(passport);
 
 require('./routes')(app); 
 
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('client/build'));
+}
+
 app.listen(PORT, () => {
   console.log(`Server has started on port ${PORT}`)
 })
