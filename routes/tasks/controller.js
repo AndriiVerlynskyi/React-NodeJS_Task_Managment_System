@@ -21,7 +21,6 @@ module.exports.getAllTasks = async (req, res) => {
 
     return res.status(200).send(tasks);
   } catch (err) {
-    console.log(err)
     res.status(500).send(err)
   }  
 }

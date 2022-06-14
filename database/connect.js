@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 
 const MONGO_URL = 
-  process.env.MONGO_URL || 
+  process.env.MONGODB_URI || 
     'mongodb+srv://andrii2022:qwe123@cluster0.vyznt.mongodb.net/?retryWrites=true';
 const MONGO_DB_NAME = process.env.MONGO_DB_NAME || 'Task_Management_System';
 
 function connectDb() {
-  mongoose.connect(`${MONGO_URL}/${MONGO_DB_NAME}`, {
+  mongoose.connect(`${MONGO_URL}`, {
     dbName: MONGO_DB_NAME,
     useUnifiedTopology: true,
     useNewUrlParser: true,
