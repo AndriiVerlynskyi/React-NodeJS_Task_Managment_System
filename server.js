@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const passport = require('passport');
+const path = require('path');
 require('dotenv').config();
 
 const connectDb = require('./database/connect');
@@ -21,9 +22,11 @@ require('./middlewares/passport')(passport);
 require('./routes')(app); 
 
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static("build"));
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  app.use(express.static(
+    res.sendFile(path.join(__dirname, 'client/build/index.html'))
+  ))
+  app.get("*", function (req, res) {
+    res.sendFile(path.resolve(__dirname, "./client/build", "index.html"));
   });
 }
 
