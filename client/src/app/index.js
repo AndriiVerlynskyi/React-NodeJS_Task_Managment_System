@@ -4,10 +4,10 @@ import './App.css';
 import { useAuth } from 'shared/auth';
 import withBrowserRouter from './hofs/with-router';
 
-const SignInPage = React.lazy(() => import('pages/Auth/sign-in'));
-const SignUpPge = React.lazy(() => import('pages/Auth/sign-up'));
-const HomePage = React.lazy(() => import('pages/Home'));
-const ConfirmEmail = React.lazy(() => import('pages/Auth/sign-up-confirm'));
+import SignInPage from 'pages/Auth/sign-in';
+import SignUpPge from 'pages/Auth/sign-up';
+import HomePage from 'pages/Home';
+import ConfirmEmail from 'pages/Auth/sign-up-confirm';
 
 function App() {
   const { user } = useAuth();

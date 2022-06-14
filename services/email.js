@@ -36,7 +36,7 @@ const sendUserSignUpEmail = async (email, token) => {
       html: `
         <h1>Hello!</h1>
         <p>To finish the registration confirm your account</p>
-        <p>Here is the link - <a href="${window.location.origin}/signup/${email}/${token}">confirm account</a>.</p>
+        <p>Here is the link - <a href="${BASE_URL}/signup/${email}/${token}">confirm account</a>.</p>
       `
     });
     return mail
@@ -51,12 +51,12 @@ const sendUserSuccessfullySignUpEmail = async (email) => {
     from: `<${EMAIL_SENDER}>`,
     to: email,
     subject: 'Successfull registration on taskinMS',
-    text: `Signed up succesfully. Here is the link: ${window.location.origin}/signin`,
+    text: `Signed up succesfully. Here is the link: ${BASE_URL}/signin`,
     html: `
       <h1>Hello!</h1>
       <p>You have successfully registered in our service, your login is ${email}</p>
       <hr />
-      <a href="${window.location.origin}/signin">To the app.</a>
+      <a href="${BASE_URL}/signin">To the app.</a>
     `
   });
 }
