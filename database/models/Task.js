@@ -18,8 +18,9 @@ const taskSchema = new Schema({
     default: false
   },
 
+  //Proirity field, where 4 is hot
   priority: {
-    type: String,
+    type: Number,
     required: true
   },
   

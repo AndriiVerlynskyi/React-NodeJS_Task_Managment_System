@@ -3,8 +3,8 @@ import React from 'react';
 const BaseButton = ({ children, ...props }) => {
   return (
     <button
-      type="button"
-      className="btn btn-primary m-2"
+      type={`button `}
+      className={`btn btn-${!!props.variant ? props.variant : 'primary'} m-2`}
       {...props}
     >
         { children }

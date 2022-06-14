@@ -72,7 +72,6 @@ module.exports.signUpSendLetter = async (req, res) => {
       const token = createSignUpToken(newUser);
       await sendUserSignUpEmail(email, token);
     } catch (err) {
-      console.log(err)
       return res.status(404).send({...err, messag: 'Failed to send mail'});
     }
 
@@ -101,8 +100,6 @@ module.exports.signUpConfirmation = async (req, res) => {
       }
 
       const { email } = payload;
-      console.log(inputEmail)
-      console.log(payload)
 
       if (inputEmail === email) {
         try {
@@ -132,6 +129,7 @@ module.exports.signUpConfirmation = async (req, res) => {
         }
       } else {
         res.status(401).send({
+          error: true,
           message: 'This link is wrong'
         })
       }
@@ -142,14 +140,14 @@ module.exports.signUpConfirmation = async (req, res) => {
 module.exports.signIn = async (req, res) => {
   const { login, password } = req.body;
 
-  const candidate = await User.findOne({ 
+  const candidate = await User.findOne({
     $or: [
       {username: login},
       {email: login}
     ]
   })
 
-  if (candidate) {    
+  if (candidate) {
     const { confirmedAt } = candidate;
 
     if (confirmedAt === null) {
@@ -173,6 +171,7 @@ module.exports.signIn = async (req, res) => {
         .set('Authorization', `Bearer ${token}`)
         .json({
           token,
+          user: candidate,
           notConfirmed: false
         })
     } else {
@@ -181,18 +180,23 @@ module.exports.signIn = async (req, res) => {
         notConfirmed: false
       })
     }
+  } else {
+    res.status(404).send({
+      message:'User is not found',
+      notConfirmed: false
+    })
   }
 }
 
-// module.exports.verifyUser = async (req, res) => {
-//   try {
-//     const { user, headers } = req;
-//     const { authorization } = headers
+module.exports.getUserData = async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const user = await User.findById(userId);
 
-//     res.status(200)
-//       .set('Authorization', authorization)
-//       .send(user)
-//   } catch (err) {
-//     res.status(401).end();
-//   }
-// }
+    return res.status(200).send(user)
+  } catch (err) {
+    res.status(500).send({
+      message: 'Error occured on server'
+    })
+  }
+}

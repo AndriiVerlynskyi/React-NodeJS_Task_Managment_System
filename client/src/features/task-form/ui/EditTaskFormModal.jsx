@@ -1,15 +1,15 @@
 import React from 'react';
 import Modal from 'react-bootstrap/Modal';
-import AddTaskForm from './AddTaskForm';
+import EditTaskForm from './EditTaskForm';
 
-const TaskFormModal = ({ showModal, setShowModal }) => {
+const TaskFormModal = ({ showModal, setShowModal, taskId }) => {
   return (
     <Modal show={showModal} onHide={setShowModal}>
       <Modal.Header closeButton>
-        <Modal.Title> Add task </Modal.Title>
+        <Modal.Title> Edit task </Modal.Title>
         </Modal.Header>
       <Modal.Body>
-        <AddTaskForm setShowModal={setShowModal}/>
+        <EditTaskForm setShowModal={setShowModal} taskId={taskId}/>
       </Modal.Body>
     </Modal>
   )

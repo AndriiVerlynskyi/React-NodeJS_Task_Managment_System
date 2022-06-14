@@ -1,5 +1,5 @@
 import React from 'react';
-import TaskForm from './TaskForm';
+import TaskForm from './AddTaskForm';
 import { taskFormContainerStyles } from '../lib/constants';
 
 const TaskFormCard = () => {

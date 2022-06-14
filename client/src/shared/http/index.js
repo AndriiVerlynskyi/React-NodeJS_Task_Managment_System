@@ -1,10 +1,11 @@
 import axios from 'axios';
+import { getToken } from 'shared/utils/storage';
 
 axios.interceptors.request.use(
   config => {
-    const authorization = JSON.parse(localStorage.getItem('authorization'));
-    if (authorization) {
-      config.headers.Authorization = authorization;
+    const token = getToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
@@ -26,14 +27,6 @@ const http = {
       method: 'post',
       url,
       data: params,
-    });
-  },
-  postFormData(url, params) {
-    return axios({
-      method: 'post',
-      url,
-      data: params,
-      headers: {'Content-Type': 'multipart/form-data' },
     });
   },
   delete(url, params) {

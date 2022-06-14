@@ -15,9 +15,7 @@ const createFilter = (req) => {
 
   if (filter.$or.length === 0) {
     delete filter.$or
-  }
-
-  // filter.userId = req.user._id;
+  };
 
   return filter;
 };

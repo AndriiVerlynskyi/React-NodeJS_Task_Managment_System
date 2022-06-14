@@ -1,9 +1,11 @@
 import http from 'shared/http';
+import { createQueryString } from 'shared/utils/create-query-string';
 
 const taskURL = '/api/task';
 
-export const getTasks = () => {
-  return http.get(`${taskURL}`)
+export const getTasks = (filter, sorter, page) => {
+  const queryString = createQueryString(filter, sorter, page);
+  return http.get(`${taskURL}${queryString}`)
 }
 
 export const getTaskById = id => {
@@ -19,7 +21,7 @@ export const deleteTask = id => {
 }
 
 export const editTask = data => {
-  return http.put(`${taskURL}/${data.id}`, data)
+  return http.put(`${taskURL}/${data._id}`, data)
 }
 
 export const changeIsDone = id => {

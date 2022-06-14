@@ -1,16 +1,22 @@
 import React from 'react';
 import { Formik, Form } from 'formik';
 import { SIGN_UP_INITIAL_VALUES } from '../lib/constants';
+import { useNavigate } from 'react-router-dom';
 import SimpleTextField from 'shared/ui/Form/SimpleTextField';
 import BaseButton from 'shared/ui/BaseButton';
 import SignUpSchema from '../model/validator';
+import { useAuth } from 'shared/auth';
 
 const SignUpForm = () => {
+  const { register } = useAuth();
+  const navigate = useNavigate();
   const handleSubmit = async (values) => {
     try {
-      console.log(values)
+      await register(values)
+      navigate('/signin')
     } catch (err) {
-
+      console.log(err)
+      alert('Failed to sign up new user')
     }
   }
 
@@ -37,7 +43,7 @@ const SignUpForm = () => {
             value={props.values.email}
           />
           <SimpleTextField
-            type='text'
+            type='password'
             name='password'
             label='password'
             onChange={props.handleChange}

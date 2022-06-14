@@ -1,6 +1,9 @@
 import React from 'react';
 import { Formik, Form } from 'formik';
 import { ADD_TASK_INITIAL_VALUES } from '../lib/constants';
+import { useMutation } from 'react-query';
+import { addTaskQueryKey } from 'shared/consts/query-constants';
+import { addTask } from 'shared/api/tasks';
 
 import PriorityField from './components/PriorityField';
 import SingleDatePicker from 'shared/ui/Form/SingleDateField';
@@ -9,13 +12,21 @@ import TextAreaField from 'shared/ui/Form/TextArea';
 import BaseButton from 'shared/ui/BaseButton';
 import TaskFormSchema from '../model/validator';
 import CenteredContainer from 'shared/ui/Containers/CenteredContainer';
+import { useTasksQuery } from 'shared/hooks/useQuery';
 
-const TaskForm = () => {
+const AddTaskForm = ({ setShowModal }) => {
+  const { refetch } = useTasksQuery();
+  const { mutateAsync } = useMutation(addTaskQueryKey, 
+    (data) => addTask(data)
+  )
+
   const handleSubmit = async (values) => {
     try {
-      console.log(values)
+      await mutateAsync({...values, priority: +values.priority})
+      setShowModal(false)
+      await refetch()
     } catch (err) {
-
+      alert('Failed to add task')
     }
   }
   return (
@@ -24,32 +35,32 @@ const TaskForm = () => {
       validationSchema={TaskFormSchema}
       onSubmit={handleSubmit}
     >
-      { props => (
+      { ({ handleChange, values }) => (
         <Form>
           <CenteredContainer>
             <SimpleTextField
               type='text'
               name='title'
               label='title'
-              onChange={props.handleChange}
-              value={props.values.title}
+              onChange={handleChange}
+              value={values.title}
             />
             <TextAreaField
               type='text'
               name='description'
               label='description'
-              onChange={props.handleChange}
-              value={props.values.description}
+              onChange={handleChange}
+              value={values.description}
             />
             <PriorityField
               id='priority'
-              onChange={props.handleChange}
-              defaultOption={ADD_TASK_INITIAL_VALUES.priority}
+              name='priority'
+              onChange={handleChange}
+              value={values.priority}
             />
             <SingleDatePicker
               id='dueDate'
               name='dueDate'
-              startDate={ADD_TASK_INITIAL_VALUES.dueDate}
             />
             <div className='mt-3'>
               <BaseButton type='submit'>Add task</BaseButton>          
@@ -61,4 +72,4 @@ const TaskForm = () => {
   )
 }
 
-export default TaskForm;
+export default AddTaskForm;

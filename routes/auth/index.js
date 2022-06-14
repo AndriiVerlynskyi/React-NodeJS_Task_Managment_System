@@ -34,4 +34,10 @@ router.post(
   controller.signIn
 )
 
+router.get(
+  '/:userId',
+  passport.authenticate('jwt', {session: false}),
+  controller.getUserData
+)
+
 module.exports = router;

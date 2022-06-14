@@ -7,13 +7,25 @@ export const taskFormContainerStyles = {
 export const ADD_TASK_INITIAL_VALUES = {
   title: '',
   description: '',
-  priority: 'medium',
+  priority: 2,
   dueDate: new Date(new Date().getTime() + (24 * 60 * 60 * 1000)).toISOString()
 }
 
 export const priorityOptions = [
-  'low',
-  'medium',
-  'high',
-  'hot'
+  {
+    value: 1,
+    name: 'low'
+  },
+  {
+    value: 2,
+    name: 'medium'
+  },
+  {
+    value: 3,
+    name: 'high'
+  },
+  {
+    value: 4,
+    name: 'hot'
+  }
 ]

@@ -1,10 +1,10 @@
 const { body } = require('express-validator');
 
 const priorityOptions = [
-  'low',
-  'medium',
-  'high',
-  'hot'
+  1,
+  2,
+  3,
+  4
 ]
 
 const createTasksValidationRules = () => {

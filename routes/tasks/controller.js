@@ -1,15 +1,20 @@
 const { Task } = require('../../database/models');
 
 const { createFilter } = require('./filter');
+const { createSorter } = require('./sorter');
 
 module.exports.getAllTasks = async (req, res) => {
   try {
-    const filter = createFilter(req)
-    console.log(filter)
+    const filter = createFilter(req);
+    filter.userId = req.user._id;
+
+    const sorter = createSorter(req.query.sort)
+
     const tasksPerPage = Number(req.query.perPage) || 15;
     const page = Number(req.query.page) || 1;
 
     const tasks = (await Task.find(filter)
+                    .sort(sorter)
                     .select('title isDone _id')
                     .skip(tasksPerPage * (page - 1))
                     .limit(tasksPerPage)) || [];
@@ -35,7 +40,6 @@ module.exports.getTask = async(req, res) => {
       })
     }
   } catch (err) {
-    console.log(err)
     res.status(500).send(err)
   }
 }
@@ -87,7 +91,6 @@ module.exports.changeIsDone = async(req, res) => {
       error: false
     })
   } catch (err) {
-    console.log(err)
     return res.status(500).send({
       ...err,
       error: true
@@ -99,7 +102,6 @@ module.exports.editTask = async (req, res) => {
   try {
     const { taskId } = req.params;
     const editedFields = req.body;
-    console.log(editedFields)
 
     const task = await Task.findById(taskId);
 

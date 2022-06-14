@@ -1,15 +1,25 @@
 import React from 'react';
 import { Formik, Form } from 'formik';
+import { useNavigate } from 'react-router-dom';
 import SimpleTextField from 'shared/ui/Form/SimpleTextField';
 import BaseButton from 'shared/ui/BaseButton';
 import { SIGN_IN_INITIAL_VALUES } from '../lib/constants';
+import { useAuth } from 'shared/auth';
 
 const SignInForm = ({ setShowModal }) => {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
   const handleSubmit = async (values) => {
     try {
-      setShowModal(true)
+      await login(values)
+      navigate('/', { replace: true })
     } catch (err) {
-
+      if (err.response.data.notConfirmed) {
+        setShowModal(true);
+      } else {
+        alert('Login failed, try again later')
+      }
     }
   }
 
@@ -28,7 +38,7 @@ const SignInForm = ({ setShowModal }) => {
             value={props.values.login}
           />
           <SimpleTextField
-            type='text'
+            type='password'
             name='password'
             label='password'
             onChange={props.handleChange}

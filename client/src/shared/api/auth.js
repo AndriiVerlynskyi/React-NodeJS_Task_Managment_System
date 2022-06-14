@@ -11,5 +11,9 @@ export const signUpSendLetter = data => {
 }
 
 export const signUpConfirmEmail = data => {
-  return http.post(`${authURL}/confirmation`, data)
+  return http.post(`${authURL}/signup/confirmemail`, data)
+}
+
+export const getUserData = (userId) => {
+  return http.get(`${authURL}/${userId}`)
 }
