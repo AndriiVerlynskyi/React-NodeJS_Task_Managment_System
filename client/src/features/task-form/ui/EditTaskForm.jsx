@@ -3,6 +3,7 @@ import { Formik, Form } from 'formik';
 import { useMutation } from 'react-query';
 import { editTaskQueryKey } from 'shared/consts/query-constants';
 import { editTask } from 'shared/api/tasks';
+import { definePriority } from 'features/task-list/model/define-priority';
 
 import PriorityField from './components/PriorityField';
 import SingleDatePicker from 'shared/ui/Form/SingleDateField';
@@ -12,8 +13,8 @@ import BaseButton from 'shared/ui/BaseButton';
 import CenteredContainer from 'shared/ui/Containers/CenteredContainer';
 import { useSingleTaskQuery, useTasksQuery } from 'shared/hooks/useQuery';
 
-const EditTaskForm = ({ setShowModal, taskId }) => {
-  const { refetch: refetchAllTasks } = useTasksQuery();
+const EditTaskForm = ({ setShowModal, taskId, sorter }) => {
+  const { refetch: refetchAllTasks } = useTasksQuery({}, sorter);
   const {
     isLoading,
     data,
@@ -37,7 +38,7 @@ const EditTaskForm = ({ setShowModal, taskId }) => {
     <>
     { !isLoading ? (
       <Formik
-        initialValues={data}
+        initialValues={{...data, priority: definePriority(data.priority)}}
         onSubmit={handleSubmit}
       >
         { ({ handleChange, values }) => (
