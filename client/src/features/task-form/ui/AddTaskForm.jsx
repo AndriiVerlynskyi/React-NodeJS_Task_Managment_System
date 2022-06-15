@@ -1,9 +1,8 @@
 import React from 'react';
 import { Formik, Form } from 'formik';
 import { ADD_TASK_INITIAL_VALUES } from '../lib/constants';
-import { useMutation } from 'react-query';
-import { addTaskQueryKey } from 'shared/consts/query-constants';
-import { addTask } from 'shared/api/tasks';
+import { useAddTaskMutation } from '../model/use-add-task-mutation';
+import { useRefetchTasksQuery } from 'features/task-list/model/use-tasks-query';
 
 import PriorityField from './components/PriorityField';
 import SingleDatePicker from 'shared/ui/Form/SingleDateField';
@@ -12,19 +11,16 @@ import TextAreaField from 'shared/ui/Form/TextArea';
 import BaseButton from 'shared/ui/BaseButton';
 import TaskFormSchema from '../model/validator';
 import CenteredContainer from 'shared/ui/Containers/CenteredContainer';
-import { useTasksQuery } from 'shared/hooks/useQuery';
 
-const AddTaskForm = ({ setShowModal }) => {
-  const { refetch } = useTasksQuery();
-  const { mutateAsync } = useMutation(addTaskQueryKey, 
-    (data) => addTask(data)
-  )
+const AddTaskForm = ({ setShowModal, query }) => {
+  const refetchTasksQuery = useRefetchTasksQuery();
+  const { mutateAsync } = useAddTaskMutation();
 
   const handleSubmit = async (values) => {
     try {
       await mutateAsync({...values, priority: +values.priority})
       setShowModal(false)
-      await refetch()
+      await refetchTasksQuery()
     } catch (err) {
       alert('Failed to add task')
     }

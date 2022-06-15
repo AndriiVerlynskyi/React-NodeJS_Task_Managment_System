@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import BaseButton from 'shared/ui/BaseButton';
 import Task from './components/Task';
 import SortTasks from './components/SortTasks';
-import { useTasksQuery } from 'shared/hooks/useQuery';
+import { useTasksQuery } from '../model/use-tasks-query';
+import { useTaskFilterData } from '../model/use-task-filter-data';
 import { AddTaskFormModal } from 'features/task-form';
 import { sortOptions } from 'features/task-list/lib/constants';
 
@@ -10,13 +11,22 @@ import { taskListCardStyles } from '../lib/constants';
 
 const TaskList = () => {
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
-  const [sortValue, setSortValue] = useState(sortOptions[0])
+  const [sortValue, setSortValue] = useState(sortOptions[0].value);
   const {
     isLoading,
     data: response,
     isError
-  } = useTasksQuery({}, [sortValue.value]);
+  } = useTasksQuery();
 
+  const setTaskParams = useTaskFilterData();
+
+  useEffect(() => {
+    const applyFilter = async (reqParams) => {
+      await setTaskParams(reqParams)
+    }
+
+    applyFilter({ sorter: [sortValue] })
+  }, [sortValue])
   return (
     <>
       <AddTaskFormModal
@@ -34,25 +44,22 @@ const TaskList = () => {
         >
           <BaseButton onClick={() => setShowAddTaskModal(true)}>+ Add task</BaseButton>
           <SortTasks
-            inputWidth={150}
-            value={sortValue.value}
+            inputWidth={170}
+            value={sortValue}
             onChange={(e) => {
-              setSortValue({
-                value: e.target.value,
-                name: e.target.options[e.target.selectedIndex].text
-              })
+              setSortValue(e.target.value)
             }}
           />
         </div>
         { isLoading ?
-          (<div>LOADING...</div>) : response.data.length ?
+          (<div>LOADING...</div>) : !!isError ? (
+            <h4 className='m-3'>Error Occured!</h4>
+          ) : response.data.length ?
           response.data.map( task => {
             return (
-              <Task key={task._id} task={task} sorter={[sortValue.value]}/>
+              <Task task={task} key={task._id} />
             )
-          }) : !!isError ? (
-            <h4 className='m-3'>Error Occured!</h4>
-          ) : (
+          }) : (
             <h4 className='m-3'>No tasks yet, add one!</h4>
           )
         }

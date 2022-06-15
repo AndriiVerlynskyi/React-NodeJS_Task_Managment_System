@@ -9,13 +9,6 @@ export const taskTitles = {
   dueDate: 'Due Date'
 }
 
-// export const sortOptions = {
-//   isActive: 'sort=isDone:0',
-//   isDone: 'sort=isDone:-1',
-//   byDueDate: 'sort=dueDate:1',
-//   higherPriority: 'sort=priority:-1'
-// }
-
 export const sortOptions = [
   {
     value: 'isDone:0',

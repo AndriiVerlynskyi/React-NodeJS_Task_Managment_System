@@ -1,4 +1,4 @@
-import { isEmpty } from "lodash"
+import { isEmpty } from "lodash";
 
 export const createQueryString = (filter, sorter, page) => {
   let queryString = '';
@@ -20,9 +20,9 @@ export const createQueryString = (filter, sorter, page) => {
       queryString = `sort=${sortingString}`
     }
   }
-  if (!isEmpty(filter) && !isEmpty(sorter)) {
-    return ''
-  } else {
+  if (!isEmpty(filter) || !isEmpty(sorter)) {
     return `?${queryString}`
+  } else {
+    return ''
   }
 }

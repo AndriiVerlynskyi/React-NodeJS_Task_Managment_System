@@ -6,29 +6,44 @@ import SimpleTextField from 'shared/ui/Form/SimpleTextField';
 import BaseButton from 'shared/ui/BaseButton';
 import SignUpSchema from '../model/validator';
 import { useAuth } from 'shared/auth';
-import ConfirmEmail from 'features/sign-in-form/ui/ConfirmEmail';
+import Alert from 'react-bootstrap/Alert';
+import Button from 'react-bootstrap/Button';
 
 const SignUpForm = () => {
-  const [showConfirmEmail, setShowConfirmEmail] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
 
   const { register } = useAuth();
   const navigate = useNavigate();
   const handleSubmit = async (values) => {
     try {
       await register(values)
-      setShowConfirmEmail(true)
-      navigate('/signin')
+      setShowAlert(true)
+      setTimeout(() => {
+        handleCloseAlert()
+      }, 2000)
     } catch (err) {
       alert('Failed to sign up new user')
     }
   }
+  
+  const handleCloseAlert = (alertTimer) => {
+    setShowAlert(false);
+    navigate('/signin')
+  }
 
   return (
     <>
-      <ConfirmEmail
-        showModal={showConfirmEmail}
-        setShowModal={setShowConfirmEmail}
-      />
+      <Alert
+        show={showAlert}
+        className='shadow'
+        variant='primary'
+        style={{position: 'fixed', top: 15, textAlign: 'center'}}
+      >
+        <p>Confirmation letter was sent to your mail.</p>
+        <Button onClick={handleCloseAlert} variant='outlined-primary'>
+          OK
+        </Button>
+      </Alert>
       <Formik
         initialValues={SIGN_UP_INITIAL_VALUES}
         validationSchema={SignUpSchema}

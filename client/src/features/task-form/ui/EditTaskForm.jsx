@@ -1,8 +1,10 @@
 import React from 'react';
 import { Formik, Form } from 'formik';
-import { useMutation } from 'react-query';
-import { editTaskQueryKey } from 'shared/consts/query-constants';
-import { editTask } from 'shared/api/tasks';
+import { useEditTaskMutation } from '../model/use-edit-mutation';
+import {
+  useSingleTaskQuery
+} from 'features/task-list/model/use-single-task-query';
+import { useRefetchTasksQuery } from 'features/task-list/model/use-tasks-query';
 import { definePriority } from 'features/task-list/model/define-priority';
 
 import PriorityField from './components/PriorityField';
@@ -11,25 +13,22 @@ import SimpleTextField from 'shared/ui/Form/SimpleTextField';
 import TextAreaField from 'shared/ui/Form/TextArea';
 import BaseButton from 'shared/ui/BaseButton';
 import CenteredContainer from 'shared/ui/Containers/CenteredContainer';
-import { useSingleTaskQuery, useTasksQuery } from 'shared/hooks/useQuery';
 
-const EditTaskForm = ({ setShowModal, taskId, sorter }) => {
-  const { refetch: refetchAllTasks } = useTasksQuery({}, sorter);
+const EditTaskForm = ({ setShowModal, taskId }) => {
+  const refetchTasksQuery = useRefetchTasksQuery();
   const {
     isLoading,
     data,
     refetch: refetchSingleTask
   } = useSingleTaskQuery(taskId);
-  const { mutateAsync } = useMutation(editTaskQueryKey, 
-    (data) => editTask(data)
-  )
+  const { mutateAsync } = useEditTaskMutation();
 
   const handleSubmit = async (values) => {
     try {
       await mutateAsync(values)
       setShowModal(false)
       await refetchSingleTask()
-      await refetchAllTasks()
+      await refetchTasksQuery()
     } catch (err) {
       alert('Failed to edit task')
     }

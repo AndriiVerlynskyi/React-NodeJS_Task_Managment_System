@@ -2,7 +2,7 @@ import React from 'react';
 import Modal from 'react-bootstrap/Modal';
 import EditTaskForm from './EditTaskForm';
 
-const EditTaskFormModal = ({ showModal, setShowModal, taskId, sorter }) => {
+const EditTaskFormModal = ({ showModal, setShowModal, taskId }) => {
   return (
     <Modal show={showModal} onHide={setShowModal}>
       <Modal.Header closeButton>
@@ -12,7 +12,6 @@ const EditTaskFormModal = ({ showModal, setShowModal, taskId, sorter }) => {
         <EditTaskForm
           setShowModal={setShowModal}
           taskId={taskId}
-          sorter={sorter}
         />
       </Modal.Body>
     </Modal>

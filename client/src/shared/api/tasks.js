@@ -3,7 +3,8 @@ import { createQueryString } from 'shared/utils/create-query-string';
 
 const taskURL = '/api/task';
 
-export const getTasks = (filter, sorter, page) => {
+export const getTasks = (params) => {
+  const { filter, sorter, page } = params || {};
   const queryString = createQueryString(filter, sorter, page);
   return http.get(`${taskURL}${queryString}`)
 }

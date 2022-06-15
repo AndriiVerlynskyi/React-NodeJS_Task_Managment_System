@@ -1,7 +1,9 @@
 import React from 'react';
 import Modal from 'react-bootstrap/Modal';
 import { taskTitles } from 'features/task-list/lib/constants';
-import { useSingleTaskQuery } from 'shared/hooks/useQuery';
+import {
+  useSingleTaskQuery
+} from 'features/task-list/model/use-single-task-query';
 import { isEmpty } from 'lodash';
 
 
